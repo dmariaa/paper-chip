@@ -17,6 +17,7 @@
         <style>
             :host {
                 display: block;
+                position: relative;
 
                 -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
                 -webkit-tap-highlight-color: transparent;
@@ -150,6 +151,10 @@
                 width: 100%;
                 box-sizing: border-box;
                 cursor: pointer;
+            }
+
+            paper-material.upside {
+                bottom: 100%;
             }
 
             paper-item.iron-selected {
@@ -502,8 +507,24 @@
                     if (!this._source.length) {
                         this._hideTips()
                     } else {
-                        this.hidden = false
+                        this._debouncer = Polymer.Debouncer.debounce(this._debouncer,
+                            Polymer.Async.microTask,
+                            this._reposTips.bind(this));
                     }
+                }
+            }
+
+            _reposTips() {
+                this.hidden = false
+                var tips = this.shadowRoot.querySelector('#tips')
+                var tipsHeight = tips.scrollHeight;
+                var rect = this.getBoundingClientRect()
+                window.console.log('Window Height: ' + window.innerHeight)
+                window.console.log('Tips total bottom: ' + (rect.bottom + tipsHeight))
+                if(window.innerHeight < (rect.bottom + tipsHeight)) {
+                    tips.classList.add('upside')
+                } else {
+                    tips.classList.remove('upside')
                 }
             }
 
